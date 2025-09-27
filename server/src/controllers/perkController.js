@@ -70,7 +70,28 @@ export async function createPerk(req, res, next) {
 // TODO
 // Update an existing perk by ID and validate only the fields that are being updated 
 export async function updatePerk(req, res, next) {
-  
+  try {
+    const { id } = req.params;
+
+    const updatedPerk = await Perk.findByIdAndUpdate(id, req.body, {
+      new: true,            // return the updated document
+      runValidators: true   // validate only updated fields
+    });
+
+    if (!updatedPerk) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Perk not found"
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: updatedPerk
+    });
+  } catch (err) {
+    next(err); // pass to global error handler middleware
+  }
 }
 
 
